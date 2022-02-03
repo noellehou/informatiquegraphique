@@ -51,9 +51,9 @@ public:
 
 class Sphere {
 public:
-    Sphere(const Vector &origin, double rayon, const Vector &couleur): O(origin), R(rayon), albedo(couleur){};
+    Sphere(const Vector &origin, double rayon, const Vector &couleur, bool mirror = false): O(origin), R(rayon), albedo(couleur), miroir(mirror) {};
 
-    bool intersection(const Ray& d, Vector& P, Vector& N, double &t){
+    bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const {
 
     // resout a*t^2 + b*t + c = 0
 
@@ -81,6 +81,7 @@ public:
     Vector O;
     double R;
     Vector albedo;
+    bool miroir;
 };
 
 class Scene {
@@ -88,7 +89,7 @@ public:
     Scene() {};
 
     void addSphere(const Sphere& s) { spheres.push_back(s); }
-    bool intersection(const Ray& d, Vector& P, Vector& N, int &sphere_id, double &min_t) {
+    bool intersection(const Ray& d, Vector& P, Vector& N, int &sphere_id, double &min_t) const {
 
         bool has_inter = false;
         min_t = 1E99;
@@ -110,4 +111,6 @@ public:
         return has_inter;
     }
     std::vector<Sphere> spheres;
+    Vector position_lumiere;
+    double intensite_lumiere;
 };
