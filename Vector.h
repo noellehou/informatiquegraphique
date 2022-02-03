@@ -30,6 +30,13 @@ public:
         return result;
     }
 
+    Vector& operator+=(const Vector& b){
+        coord[0] += b[0];
+        coord[1] += b[1];
+        coord[2] += b[2];
+        return *this;
+    }
+
 private:
     double coord[3];
 
@@ -39,8 +46,10 @@ Vector operator+(const Vector& a, const Vector &b);
 Vector operator-(const Vector& a, const Vector &b);
 Vector operator*(double a, const Vector &b);
 Vector operator*(const Vector &b, double a);
+Vector operator*(const Vector &a, const Vector &b);
 Vector operator/(const Vector& a, double b);
 double dot(const Vector&a, const Vector& b);
+Vector cross(const Vector&a, const Vector& b);
 
 
 class Ray{
