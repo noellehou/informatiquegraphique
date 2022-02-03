@@ -51,7 +51,7 @@ public:
 
 class Sphere {
 public:
-    Sphere(const Vector &origin, double rayon, const Vector &couleur, bool mirror = false): O(origin), R(rayon), albedo(couleur), miroir(mirror) {};
+    Sphere(const Vector &origin, double rayon, const Vector &couleur, bool mirror = false, bool transparent = false): O(origin), R(rayon), albedo(couleur), miroir(mirror), transparency(transparent) {};
 
     bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const {
 
@@ -82,6 +82,7 @@ public:
     double R;
     Vector albedo;
     bool miroir;
+    bool transparency;
 };
 
 class Scene {

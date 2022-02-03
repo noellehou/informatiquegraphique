@@ -36,6 +36,12 @@ double dot(const Vector&a, const Vector& b) {
     return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
 }
 
+double sqr(const double&a) {
+    return pow(a,2);
+}
+
+
+
 Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
 
     if (nbrebonds==0) return Vector(0,0,0);
@@ -53,7 +59,25 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
             Vector direction_miroir = r.direction - 2*dot(N, r.direction)*N;
             Ray rayon_miroir(P + 0.001*N, direction_miroir);
             intensite_pixel = getColor(rayon_miroir, s, nbrebonds - 1);
+        
         } else{
+            if (s.spheres[sphere_id].transparency) {
+                double n1 = 1;
+                double n2 = 1.3; //verre
+                Vector normale_pour_transparence(N);
+                if (dot(r.direction, N) > 0 ) { //on sort de la sphere
+                    n1 = 1.3;
+                    n2 = 1;
+                    normale_pour_transparence = 0 - N;
+                }
+                double radical = 1-sqr(n1/n2)*(1-sqr(dot(normale_pour_transparence,r.direction)));
+                if (radical >0 ) {
+                    Vector direction_refracte = (n1/n2) * (r.direction - dot(r.direction, normale_pour_transparence)*normale_pour_transparence) - normale_pour_transparence * sqrt(radical);
+                    Ray rayon_refracte(P - 0.001*normale_pour_transparence, direction_refracte);
+                    intensite_pixel = getColor(rayon_refracte, s, nbrebonds - 1);
+                }
+            } else {
+
             Ray ray_light(P + 0.01*N, (s.position_lumiere - P).getNormalized());
             Vector P_light, N_light;
             int sphere_id_light;
@@ -66,6 +90,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
             else{
                 intensite_pixel = s.spheres[sphere_id].albedo * s.intensite_lumiere * std::max(0., dot((s.position_lumiere-P).getNormalized(),N)) / d_light2;
             }
+            }
         }       
     }
     return intensite_pixel;
@@ -77,7 +102,7 @@ int main() {
 	int H = 512;
 	double fov = 60*M_PI/180;
 
-    Sphere s1(Vector(-15,0,-55), 10, Vector(1,0,0), true);
+    Sphere s1(Vector(-15,0,-55), 10, Vector(1,0,0), false, true);
     Sphere s2(Vector(15,0,-55), 10, Vector(1,0,0), true);
 
     Sphere sol(Vector(0,-2000-20,0), 2000, Vector(1,1,1)); //sol
