@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [
+        ""
+      ],
+      "stopAtEntry": true,
+      "cwd": "/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique",
+      "environment": [],
+      "program": "/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/build/Debug/outDebug",
+      "internalConsoleOptions": "openOnSessionStart",
+      "MIMode": "gdb",
+      "externalConsole": false
+    }
+  ]
+}
