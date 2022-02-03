@@ -75,7 +75,6 @@ public:
 
     P = d.origin + t*d.direction;
     N = (P-O).getNormalized();
-
     return true;
 
 }
@@ -86,19 +85,20 @@ public:
 
 class Scene {
 public:
-Scene() {};
+    Scene() {};
+
     void addSphere(const Sphere& s) { spheres.push_back(s); }
-    bool intersection(const Ray& d, Vector& P, Vector& N, int &sphere_id) {
+    bool intersection(const Ray& d, Vector& P, Vector& N, int &sphere_id, double &min_t) {
 
         bool has_inter = false;
-        double min_t = 1E99;
+        min_t = 1E99;
 
         for (int i=0; i<spheres.size();i++){
             Vector localP, localN;
             double t;
             bool local_has_inter = spheres[i].intersection(d, localP, localN, t);
-            has_inter = true;
             if (local_has_inter){
+                has_inter = true;
                 if (t < min_t) {
                     min_t = t;
                     P = localP;
