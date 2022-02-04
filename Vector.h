@@ -1,6 +1,13 @@
 
 #pragma once
 #include <math.h>
+#include <vector>
+#include <random>
+#define M_PI 3.1415926535897932
+
+static std::default_random_engine engine;
+static std::uniform_real_distribution<double> uniform(0,1);
+
 
 
 class Vector {
@@ -49,7 +56,10 @@ Vector operator*(const Vector &b, double a);
 Vector operator*(const Vector &a, const Vector &b);
 Vector operator/(const Vector& a, double b);
 double dot(const Vector&a, const Vector& b);
+double sqr(const double&a);
 Vector cross(const Vector&a, const Vector& b);
+
+Vector random_cos(const Vector &N);
 
 
 class Ray{
@@ -121,6 +131,6 @@ public:
         return has_inter;
     }
     std::vector<Sphere> spheres;
-    Vector position_lumiere;
+    Sphere *lumiere;
     double intensite_lumiere;
 };
