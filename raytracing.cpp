@@ -58,7 +58,7 @@ return direction_aleatoire_repere_local[2]*N + direction_aleatoire_repere_local[
 }
 
 
-Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
+Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
 
     if (nbrebonds==0) return Vector(0,0,0);
 
@@ -71,6 +71,9 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
     Vector intensite_pixel(0,0,0);
     if (has_inter) {
 
+        /*if (sphere_id ==0){
+            intensite_pixel = show_lights?(s.lumiere->albedo * s.intensite_lumiere):Vector(0.,0.,0.);
+        } else*/
         if (s.spheres[sphere_id].miroir) {
             Vector direction_miroir = r.direction - 2*dot(N, r.direction)*N;
             Ray rayon_miroir(P + 0.001*N, direction_miroir);
@@ -125,7 +128,10 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
                 intensite_pixel = Vector(0,0,0);
             } else {
                 intensite_pixel = s.intensite_lumiere / (4*M_PI*d_light2) * std::max(0.,dot(N,wi)) * dot(Np, 0-wi) / dot(axeOP, dir_aleatoire)*s.spheres[sphere_id].albedo ;
-
+                /*Vector BRDF = s.spheres[sphere_id].albedo / M_PI * (1 - s.spheres[sphere_id]->ks) + s.spheres[sphere_id]->ks*Phong_BRDF(wi,r.direction,N,s.spheres[sphere_id]->phong_exponent)*s.spheres[sphere_id].albedo;
+                double J = 1.* dot(Np, 0-wi)/d_light2;
+                double proba = dot(axeOP, dir_aleatoire)/(M_PI*s.lumiere->R*s.lumiere->R);
+                intensite_pixel =  s.intensite_lumiere * std::max(0.,dot(N,wi)) * J * BRDF / proba; */
             }
 
 
@@ -133,6 +139,8 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
 
             Vector direction_aleatoire = random_cos(N);
             Ray rayon_aleatoire (P + 0.001*N, direction_aleatoire);
+
+
             intensite_pixel += getColor(rayon_aleatoire, s, nbrebonds - 1) * s.spheres[sphere_id].albedo;
 
 
@@ -150,23 +158,31 @@ int main() {
     const int nrays = 80;
 	double fov = 60*M_PI/180;
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
-    Sphere s1(Vector(0,0,-55), 20, Vector(1,1,1));
-    Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.1,0.3,1)); //sol
+ 
+    Sphere s1(Vector(0,0,-55), 10, Vector(1,1,1));
+    Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
+    Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
+
+    Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.4,0.4,1)); //sol
     Sphere plafond(Vector(0,2000+100,0), 2000, Vector(1,1,1)); //plafond
     Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,1,1)); //mur gauche
-    Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.2,1)); //mur droit
+    Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
 
     Scene s; 
     s.addSphere(slum);
     s.addSphere(s1);
+    s.addSphere(s2);
+    s.addSphere(s3);
     s.addSphere(sol);
     s.addSphere(plafond);
     s.addSphere(murgauche);
     s.addSphere(murdroit);
     s.addSphere(murfond);
     s.lumiere = &slum;
-    s.intensite_lumiere = 300000000;
+    s.intensite_lumiere = 1000000000 /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
+    Vector position_camera(0.,0.,0.);
+    double focus_distance = 55;
 
 	std::vector<unsigned char> image(W*H * 3, 0);
 
@@ -183,12 +199,16 @@ int main() {
                 double dx = R*cos(2*M_PI*r2);
                 double dy = R*sin(2*M_PI*r2);
 
-                // double dx_aperture = (uniform(engine) - 0.5) * 5.;
-                // double dy_aperture = (uniform(engine) - 0.5) * 5.;
+                double dx_aperture = (uniform(engine) - 0.5) * 5.;
+                double dy_aperture = (uniform(engine) - 0.5) * 5.;
 
                 Vector direction(j-W/2 + 0.5 +dx, i-H/2 +0.5 +dy, -W/(2*tan(fov/2)));
                 direction.normalize();
-                Ray r(Vector(0,0,0), direction);
+
+                Vector destination = position_camera + focus_distance * direction;
+                Vector new_origin = position_camera + Vector(dx_aperture, dy_aperture,0);
+
+                Ray r(new_origin, (destination-new_origin).getNormalized());
 
                 color += getColor(r, s, 5) / nrays;
         }
@@ -198,8 +218,8 @@ int main() {
 		}
 	}
 
-	stbi_write_png("output.png", W, H, 3, &image[0], 0);
+	stbi_write_png("output_focus.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }
-// 49:36 cours 4
+// 21:07 errata 4
