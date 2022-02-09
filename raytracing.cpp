@@ -124,7 +124,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
             if (has_inter_light && t_light*t_light < d_light2*0.99) {
                 intensite_pixel = Vector(0,0,0);
             } else {
-                intensite_pixel = s.intensite_lumiere / (4*M_PI*d_light2) * std::max(0.,dot(Np,wi)) * dot(Np, 0-wi) / dot(axeOP, dir_aleatoire)*s.spheres[sphere_id].albedo ;
+                intensite_pixel = s.intensite_lumiere / (4*M_PI*d_light2) * std::max(0.,dot(N,wi)) * dot(Np, 0-wi) / dot(axeOP, dir_aleatoire)*s.spheres[sphere_id].albedo ;
 
             }
 
@@ -145,12 +145,12 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
 
 int main() {
     
-	int W = 512;
-	int H = 512;
+	int W = 1024;
+	int H = 1024;
     const int nrays = 80;
 	double fov = 60*M_PI/180;
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
-    Sphere s1(Vector(0,0,-100), 20, Vector(1,1,1));
+    Sphere s1(Vector(0,0,-55), 20, Vector(1,1,1));
     Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.1,0.3,1)); //sol
     Sphere plafond(Vector(0,2000+100,0), 2000, Vector(1,1,1)); //plafond
     Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,1,1)); //mur gauche
@@ -183,9 +183,11 @@ int main() {
                 double dx = R*cos(2*M_PI*r2);
                 double dy = R*sin(2*M_PI*r2);
 
+                // double dx_aperture = (uniform(engine) - 0.5) * 5.;
+                // double dy_aperture = (uniform(engine) - 0.5) * 5.;
+
                 Vector direction(j-W/2 + 0.5 +dx, i-H/2 +0.5 +dy, -W/(2*tan(fov/2)));
                 direction.normalize();
-
                 Ray r(Vector(0,0,0), direction);
 
                 color += getColor(r, s, 5) / nrays;
