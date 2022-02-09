@@ -1,5 +1,5 @@
 #include "Vector.h"
-
+#include <iostream>
 
 
 Vector operator+(const Vector& a, const Vector &b) {

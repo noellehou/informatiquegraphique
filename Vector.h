@@ -3,7 +3,7 @@
 #include <math.h>
 #include <vector>
 #include <random>
-#define M_PI 3.1415926535897932
+
 
 static std::default_random_engine engine;
 static std::uniform_real_distribution<double> uniform(0,1);

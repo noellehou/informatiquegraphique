@@ -13,6 +13,51 @@
 #include <math.h>
 
 
+Vector operator+(const Vector& a, const Vector &b) {
+    return Vector(a[0]+b[0], a[1]+b[1], a[2]+b[2]);
+}
+Vector operator-(const Vector& a, const Vector &b) {
+    return Vector(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+}
+Vector operator*(double a, const Vector &b) {
+    return Vector(a*b[0], a*b[1], a*b[2]);
+}
+Vector operator*(const Vector &a, const Vector &b) {
+    return Vector(a[0]*b[0], a[1]*b[1], a[2]*b[2]);
+}
+Vector operator*(const Vector &b, double a) {
+    return Vector(a*b[0], a*b[1], a*b[2]);
+}
+Vector operator/(const Vector& a, double b) {
+    return Vector(a[0]/b, a[1]/b, a[2]/b);
+}
+
+double dot(const Vector&a, const Vector& b) {
+    return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+}
+
+double sqr(const double&a) {
+    return pow(a,2);
+}
+
+Vector cross(const Vector&a, const Vector& b) {
+    return Vector(a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0]);
+}
+
+Vector random_cos(const Vector &N) {
+
+double r1 = uniform(engine);
+double r2 = uniform(engine);
+Vector direction_aleatoire_repere_local(cos(2*M_PI*r1)*sqrt(1-r2),sin(2*M_PI*r1)*sqrt(1-r2),sqrt(r2));
+Vector aleatoire(uniform(engine)-0.5,uniform(engine)-0.5,uniform(engine)-0.5);
+Vector tangent1 = cross(N,aleatoire); tangent1.normalize();
+Vector tangent2 = cross(tangent1,N);
+
+return direction_aleatoire_repere_local[2]*N + direction_aleatoire_repere_local[0] * tangent1 + direction_aleatoire_repere_local[1] * tangent2;
+
+}
+
+
 Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
 
     if (nbrebonds==0) return Vector(0,0,0);
@@ -25,7 +70,6 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
 
     Vector intensite_pixel(0,0,0);
     if (has_inter) {
-
 
         if (s.spheres[sphere_id].miroir) {
             Vector direction_miroir = r.direction - 2*dot(N, r.direction)*N;
@@ -100,19 +144,20 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds) {
 }
 
 int main() {
+    
 	int W = 512;
 	int H = 512;
     const int nrays = 80;
 	double fov = 60*M_PI/180;
-    Sphere slum(Vector(15, 70, -30), -5, Vector(1.,1.,1.));
-    Sphere s1(Vector(0,0,-55), 20, Vector(1,1,1));
-    Sphere sol(Vector(0,-2000-20,0), 2000, Vector(1,1,1)); //sol
+    Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
+    Sphere s1(Vector(0,0,-100), 20, Vector(1,1,1));
+    Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.1,0.3,1)); //sol
     Sphere plafond(Vector(0,2000+100,0), 2000, Vector(1,1,1)); //plafond
-    Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(0,1,0)); //mur gauche
-    Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0,0,1)); //mur droit
-    Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(0,1,1)); //mur fond
+    Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,1,1)); //mur gauche
+    Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.2,1)); //mur droit
+    Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
 
-    Scene s;
+    Scene s; 
     s.addSphere(slum);
     s.addSphere(s1);
     s.addSphere(sol);
