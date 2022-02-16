@@ -186,7 +186,9 @@ int main() {
     s.intensite_lumiere = 1000000000;
     /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
     Vector position_camera(0.,0.,0.);
-    double focus_distance = 55;
+    double focus_distance = 20;
+    double aperture = 0.5;
+
 
 	std::vector<unsigned char> image(W*H * 3, 0);
 
@@ -203,8 +205,8 @@ int main() {
                 double dx = R*cos(2*M_PI*r2);
                 double dy = R*sin(2*M_PI*r2);
 
-                double dx_aperture = (uniform(engine) - 0.5) * 5.;
-                double dy_aperture = (uniform(engine) - 0.5) * 5.;
+                double dx_aperture = (uniform(engine) - 0.5) * aperture;
+                double dy_aperture = (uniform(engine) - 0.5) * aperture;
 
                 Vector direction(j-W/2 + 0.5 +dx, i-H/2 +0.5 +dy, -W/(2*tan(fov/2)));
                 direction.normalize();
@@ -222,7 +224,7 @@ int main() {
 		}
 	}
 
-	stbi_write_png("output_focus.png", W, H, 3, &image[0], 0);
+	stbi_write_png("output_redtriangle.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }

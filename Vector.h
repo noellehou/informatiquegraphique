@@ -153,7 +153,6 @@ public:
         if (alpha <0 || alpha > 1) return false;
         if (beta < 0 || beta > 1 ) return false;
         if (gamma <0 || gamma > 1) return false;
-        if (alpha+beta+gamma > 1) return false; //incorrect corrigé plus tard
 
         return true;
     }
