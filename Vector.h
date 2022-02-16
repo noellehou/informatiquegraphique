@@ -68,9 +68,23 @@ public:
     Vector origin, direction;
 };
 
-class Sphere {
+class Object {
 public:
-    Sphere(const Vector &origin, double rayon, const Vector &couleur, bool mirror = false, bool transparent = false): O(origin), R(rayon), albedo(couleur), miroir(mirror), transparency(transparent) {};
+    Object() {}
+    virtual bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const =0;
+
+    Vector albedo;
+    bool miroir;
+    bool transparency;
+};
+
+class Sphere : public Object{
+public:
+    Sphere(const Vector &origin, double rayon, const Vector &couleur, bool mirror = false, bool transparent = false): O(origin), R(rayon) {
+        albedo = couleur;
+        miroir = mirror;
+        transparency = transparent;
+    };
 
     bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const {
 
@@ -99,25 +113,69 @@ public:
 }
     Vector O;
     double R;
-    Vector albedo;
-    bool miroir;
-    bool transparency;
+
+};
+
+class Triangle : public Object {
+public:
+    Triangle(const Vector& A, const Vector &B, const Vector& C, const Vector &couleur, bool mirror = false, bool transparent = false): A(A), B(B), C(C) {
+        albedo = couleur;
+        miroir = mirror;
+        transparency = transparent;
+
+    };
+
+    bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const{
+        
+        N = cross(B-A,C-A).getNormalized();
+        t = dot(C - d.origin,N)/ dot(d.direction,N);
+        if (t<0) return false;
+        P = d.origin + t*d.direction;
+        Vector u = B-A;
+        Vector v = C-A;
+        Vector w = P-A;
+        double m11 = u.getNorm2();
+        double m12 = dot(u,v);
+        double m22 = v.getNorm2();
+        double detm = m11 * m22 - m12 * m12;
+
+        double b11 = dot(w,u);
+        double b12 = dot(w,v);
+        double detb = b11 * m22 - b12 * m12;
+        double beta = detb/detm; //coord barycentrique w.r.t à B
+
+        double g12 = b11;
+        double g22 = b12;
+        double detg = m11 * g22 - m12*g12;
+        double gamma = detg/detm; //coord barycentrique w.r.t à A
+
+        double alpha = 1 - beta - gamma;
+        if (alpha <0 || alpha > 1) return false;
+        if (beta < 0 || beta > 1 ) return false;
+        if (gamma <0 || gamma > 1) return false;
+        if (alpha+beta+gamma > 1) return false; //incorrect corrigé plus tard
+
+        return true;
+    }
+    Vector A, B, C;
 };
 
 class Scene {
 public:
     Scene() {};
 
-    void addSphere(const Sphere& s) { spheres.push_back(s); }
+    void addSphere(const Sphere* s) { objects.push_back(&s); }
+    void addTriangle(const Triangle* s) { objects.push_back(&s); }
+
     bool intersection(const Ray& d, Vector& P, Vector& N, int &sphere_id, double &min_t) const {
 
         bool has_inter = false;
         min_t = 1E99;
 
-        for (int i=0; i<spheres.size();i++){
+        for (int i=0; i<objects.size();i++){
             Vector localP, localN;
             double t;
-            bool local_has_inter = spheres[i].intersection(d, localP, localN, t);
+            bool local_has_inter = objects[i].intersection(d, localP, localN, t);
             if (local_has_inter){
                 has_inter = true;
                 if (t < min_t) {
@@ -130,7 +188,7 @@ public:
         }
         return has_inter;
     }
-    std::vector<Sphere> spheres;
+    std::vector<const Object*> objects;
     Sphere *lumiere;
     double intensite_lumiere;
 };

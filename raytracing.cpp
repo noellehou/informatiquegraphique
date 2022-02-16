@@ -74,13 +74,13 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
         /*if (sphere_id ==0){
             intensite_pixel = show_lights?(s.lumiere->albedo * s.intensite_lumiere):Vector(0.,0.,0.);
         } else*/
-        if (s.spheres[sphere_id].miroir) {
+        if (s.objects[sphere_id]->miroir) {
             Vector direction_miroir = r.direction - 2*dot(N, r.direction)*N;
             Ray rayon_miroir(P + 0.001*N, direction_miroir);
             intensite_pixel = getColor(rayon_miroir, s, nbrebonds - 1);
         
         } else{
-            if (s.spheres[sphere_id].transparency) {
+            if (s.objects[sphere_id]->transparency) {
                 double n1 = 1;
                 double n2 = 1.3; //verre
                 Vector normale_pour_transparence(N);
@@ -141,7 +141,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
             Ray rayon_aleatoire (P + 0.001*N, direction_aleatoire);
 
 
-            intensite_pixel += getColor(rayon_aleatoire, s, nbrebonds - 1) * s.spheres[sphere_id].albedo;
+            intensite_pixel += getColor(rayon_aleatoire, s, nbrebonds - 1) * s.objects[sphere_id]->albedo;
 
 
             }
@@ -159,9 +159,9 @@ int main() {
 	double fov = 60*M_PI/180;
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
  
-    Sphere s1(Vector(0,0,-55), 10, Vector(1,1,1));
-    Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
-    Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
+    Sphere s1(Vector(0,0,-55), 20, Vector(1,1,1));
+    //Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
+    //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
 
     Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.4,0.4,1)); //sol
     Sphere plafond(Vector(0,2000+100,0), 2000, Vector(1,1,1)); //plafond
@@ -169,18 +169,22 @@ int main() {
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
 
+    Triangle tri(Vector(-10,-10,-20),Vector(-10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
+
     Scene s; 
     s.addSphere(slum);
     s.addSphere(s1);
-    s.addSphere(s2);
-    s.addSphere(s3);
+    //s.addSphere(s2);
+    //s.addSphere(s3);
+    s.addTriangle(tri);
     s.addSphere(sol);
     s.addSphere(plafond);
     s.addSphere(murgauche);
     s.addSphere(murdroit);
     s.addSphere(murfond);
     s.lumiere = &slum;
-    s.intensite_lumiere = 1000000000 /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
+    s.intensite_lumiere = 1000000000;
+    /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
     Vector position_camera(0.,0.,0.);
     double focus_distance = 55;
 
@@ -222,4 +226,4 @@ int main() {
 
 	return 0;
 }
-// 21:07 errata 4
+// 32:55 cours
