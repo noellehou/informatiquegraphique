@@ -160,12 +160,12 @@ public:
     Vector A, B, C;
 };
 
-class Scene {
+class Scene  {
 public:
     Scene() {};
 
-    void addSphere(const Sphere* s) { objects.push_back(&s); }
-    void addTriangle(const Triangle* s) { objects.push_back(&s); }
+    void addSphere(const Sphere& s) { objects.push_back(&s); }
+    void addTriangle(const Triangle& s) { objects.push_back(&s); }
 
     bool intersection(const Ray& d, Vector& P, Vector& N, int &sphere_id, double &min_t) const {
 
@@ -175,7 +175,7 @@ public:
         for (int i=0; i<objects.size();i++){
             Vector localP, localN;
             double t;
-            bool local_has_inter = objects[i].intersection(d, localP, localN, t);
+            bool local_has_inter = objects[i]->intersection(d, localP, localN, t);
             if (local_has_inter){
                 has_inter = true;
                 if (t < min_t) {

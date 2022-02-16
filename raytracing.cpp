@@ -127,7 +127,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
             if (has_inter_light && t_light*t_light < d_light2*0.99) {
                 intensite_pixel = Vector(0,0,0);
             } else {
-                intensite_pixel = s.intensite_lumiere / (4*M_PI*d_light2) * std::max(0.,dot(N,wi)) * dot(Np, 0-wi) / dot(axeOP, dir_aleatoire)*s.spheres[sphere_id].albedo ;
+                intensite_pixel = ( s.intensite_lumiere / (4*M_PI*d_light2) * std::max(0.,dot(N,wi)) * dot(Np, 0-wi) / dot(axeOP, dir_aleatoire) ) * s.objects[sphere_id]->albedo ;
                 /*Vector BRDF = s.spheres[sphere_id].albedo / M_PI * (1 - s.spheres[sphere_id]->ks) + s.spheres[sphere_id]->ks*Phong_BRDF(wi,r.direction,N,s.spheres[sphere_id]->phong_exponent)*s.spheres[sphere_id].albedo;
                 double J = 1.* dot(Np, 0-wi)/d_light2;
                 double proba = dot(axeOP, dir_aleatoire)/(M_PI*s.lumiere->R*s.lumiere->R);
