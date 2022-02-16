@@ -159,7 +159,7 @@ int main() {
 	double fov = 60*M_PI/180;
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
  
-    Sphere s1(Vector(0,0,-55), 20, Vector(1,1,1));
+    Sphere s1(Vector(0,0,-55), 20, Vector(1.,1.,1.));
     //Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
     //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
 
@@ -169,7 +169,7 @@ int main() {
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
 
-    Triangle tri(Vector(-10,-10,-20),Vector(-10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
+    Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
     Scene s; 
     s.addSphere(slum);
@@ -228,4 +228,4 @@ int main() {
 
 	return 0;
 }
-// 32:55 cours
+// 35:24 cours 5

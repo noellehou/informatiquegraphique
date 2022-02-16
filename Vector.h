@@ -71,7 +71,7 @@ public:
 class Object {
 public:
     Object() {}
-    virtual bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const =0;
+    virtual bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const = 0;
 
     Vector albedo;
     bool miroir;
@@ -140,12 +140,12 @@ public:
         double detm = m11 * m22 - m12 * m12;
 
         double b11 = dot(w,u);
-        double b12 = dot(w,v);
-        double detb = b11 * m22 - b12 * m12;
+        double b21 = dot(w,v);
+        double detb = b11 * m22 - b21 * m12;
         double beta = detb/detm; //coord barycentrique w.r.t à B
 
         double g12 = b11;
-        double g22 = b12;
+        double g22 = b21;
         double detg = m11 * g22 - m12*g12;
         double gamma = detg/detm; //coord barycentrique w.r.t à A
 
