@@ -217,7 +217,15 @@ public:
 		}
 		fclose(f);
 
+	bb.bmax = vertices[0];
+	bb.bmin = vertices[0];
+	for (int i = 0; i< vertices.size(); i++) {
+		vertices[i]
 	}
+
+}
+
+	
 
 	std::vector<TriangleIndices> indices;
 	std::vector<Vector> vertices;

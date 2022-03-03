@@ -43,3 +43,12 @@ Geometry::Geometry(const char* obj, double scaling, const Vector& offset, const 
 
 
 }
+
+
+
+
+////
+
+
+
+
