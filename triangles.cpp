@@ -4,30 +4,6 @@
 #include <algorithm>
 #include <vector>
 
-class BBox {
-public:
-	BBox(const Vector& bmin, const Vector& bmax) : bmin(bmin), bmax(bmax) {};
-	bool intersection(const Ray& d) {
-		double t_1_x = (bmin[0] - d.origin[0]) / d.direction[0];
-		double t_2_x = (bmin[0] - d.origin[0]) / d.direction[0];
-		double t_min_x = std::min(t_1_x, t_2_x);
-		double t_max_x = std::max(t_1_x, t_2_x);
-
-		double t_1_y = (bmin[1] - d.origin[1]) / d.direction[1];
-		double t_2_y = (bmin[1] - d.origin[1]) / d.direction[1];
-		double t_min_y = std::min(t_1_y, t_2_y);
-		double t_max_y = std::max(t_1_y, t_2_y);
-
-		double t_1_z = (bmin[2] - d.origin[2]) / d.direction[2];
-		double t_2_z = (bmin[2] - d.origin[2]) / d.direction[2];
-		double t_min_z = std::min(t_1_z, t_2_z);
-		double t_max_z = std::max(t_1_z, t_2_z);
-
-		if (std::min(std::min(t_max_x, t_max_y),t_max_z) - std::max(std::max(t_min_x,t_min_y),t_min_z) > 0) return ture;
-		return false;
-	}
-	Vector bmin, bmax;
-};
 
 class TriangleIndices {
 public:

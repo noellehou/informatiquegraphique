@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "Geometry.h"
+
 
 
 Vector operator+(const Vector& a, const Vector &b) {
@@ -156,11 +158,11 @@ int main() {
     
 	int W = 1024;
 	int H = 1024;
-    const int nrays = 80;
+    const int nrays = 8;
 	double fov = 60*M_PI/180;
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
  
-    Sphere s1(Vector(0,0,-55), 20, Vector(1.,1.,1.));
+    // Sphere s1(Vector(0,0,-55), 20, Vector(1.,1.,1.));
     //Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
     //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
 
@@ -169,15 +171,17 @@ int main() {
     Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,1,1)); //mur gauche
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
+    Geometry g1("17-potted_plant_obj/potted_plant_obj.obj", 1, Vector(0,0,-55), Vector(1.,1.,1.));
 
-    Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
+    // Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
     Scene s; 
     s.addSphere(slum);
-    s.addSphere(s1);
+    // s.addSphere(s1);
     //s.addSphere(s2);
     //s.addSphere(s3);
-    s.addTriangle(tri);
+    // s.addTriangle(tri);
+    s.addGeometry(g1);
     s.addSphere(sol);
     s.addSphere(plafond);
     s.addSphere(murgauche);
@@ -187,7 +191,7 @@ int main() {
     s.intensite_lumiere = 1000000000;
     /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
     Vector position_camera(0.,0.,0.);
-    double focus_distance = 20;
+    double focus_distance = 55;
     double aperture = 0.5;
 
 
