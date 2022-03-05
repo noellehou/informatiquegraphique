@@ -15,7 +15,6 @@
 #include "Geometry.h"
 
 
-
 Vector operator+(const Vector& a, const Vector &b) {
     return Vector(a[0]+b[0], a[1]+b[1], a[2]+b[2]);
 }
@@ -172,7 +171,7 @@ int main() {
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
     Geometry g1("17-potted_plant_obj/potted_plant_obj.obj", 1, Vector(0,0,-55), Vector(1.,1.,1.));
-
+    
     // Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
     Scene s; 
