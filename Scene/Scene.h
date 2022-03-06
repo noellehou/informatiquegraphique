@@ -14,7 +14,7 @@ public:
 
     void addSphere(const Sphere& s) { objects.push_back((Object*)&s); }
     //void addTriangle(const Triangle& s) { objects.push_back((Object*)&s); }
-	void addMesh(TriangleMesh* m) {objects.push_back(m); }
+	void addMesh(TriangleMesh& m) {objects.push_back(&m); }
 
     bool intersection(const Ray& d, Vector& P, Vector& N, int &sphere_id, double &min_t) const {
 

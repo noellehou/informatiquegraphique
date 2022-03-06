@@ -176,7 +176,7 @@ int main() {
 
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
  
-    // Sphere s1(Vector(0,0,-55), 20, Vector(1.,1.,1.));
+    //Sphere s1(Vector(0,0,-55), 20, Vector(1.,1.,1.));
     //Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
     //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
 
@@ -185,17 +185,17 @@ int main() {
     Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,1,1)); //mur gauche
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
-    // Geometry g1("17-potted_plant_obj/potted_plant_obj.obj", 1, Vector(0,0,-55), Vector(1.,1.,1.));
+    TriangleMesh g1("/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/mesh/dog.obj", 10, Vector(0.,0.,-55), Vector(1.,1.,1.));
     
     // Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
     Scene s; 
     s.addSphere(slum);
-    // s.addSphere(s1);
+    //s.addSphere(s1);
     //s.addSphere(s2);
     //s.addSphere(s3);
     // s.addTriangle(tri);
-    // s.addGeometry(g1);
+    s.addMesh(g1);
     s.addSphere(sol);
     s.addSphere(plafond);
     s.addSphere(murgauche);
@@ -243,7 +243,7 @@ int main() {
 		}
 	}
 
-	stbi_write_png("..outputs/output_128.png", W, H, 3, &image[0], 0);
+	stbi_write_png("output_test.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }
