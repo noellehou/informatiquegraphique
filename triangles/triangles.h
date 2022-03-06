@@ -20,8 +20,7 @@
 class BBox {
 public:
 	BBox() {};
-	BBox(const Vector& bmin, const Vector& bmax);
-	~BBox(){};
+	BBox(const Vector& bmin, const Vector& bmax) : bmin(bmin), bmax(bmax) {};
 	bool intersection(const Ray& d) const {
 		double t_1_x = (bmin[0] - d.origin[0]) / d.direction[0];
 		double t_2_x = (bmin[0] - d.origin[0]) / d.direction[0];
@@ -89,6 +88,9 @@ class Triangle : public Object {
 
 class TriangleMesh : public Object
 {
+
+private:
+	BBox bb;
 public:
 	TriangleMesh(const char*obj, double scaling, const Vector& offset, const Vector &couleur, bool mirror = false, bool transparent = false){
 	albedo = couleur;
@@ -97,7 +99,8 @@ public:
 
 	char matfile[255];
 	char grp[255];
-    FILE* f;
+
+	FILE* f;
 	f = fopen(obj, "r");
 	int curGroup = -1;
 	while (!feof(f)) {
@@ -263,18 +266,19 @@ public:
 
 	}
 	fclose(f);
+
     bb.bmax = vertices[0];
     bb.bmin = vertices[0];
-    for (int i = 0; i<vertices.size(); i++) {
+    for (int i = 1; i<vertices.size(); i++) {
         for (int j = 0; j < 3; j++){
             bb.bmin[j] = std::min(bb.bmin[j], vertices[i][j]);
-            bb.bmax[j] = std::min(bb.bmax[j], vertices[i][j]);
+            bb.bmax[j] = std::max(bb.bmax[j], vertices[i][j]);
         }
     }
 	};
-	
-	std::vector<int> faces;
+
 	std::vector<int> faceGroup;
+	std::vector<int> faces;
 	std::vector<int> normalIds;
 	std::vector<int> uvIds;
 	std::vector<Vector> vertices;
@@ -284,7 +288,7 @@ public:
 	std::vector<Vector> vertexcolors;
 
 	bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const {
-		if (!bb.intersection(d)) return false;
+	if (!bb.intersection(d)) return false;
 
     t = 1E99;
     bool has_inter = false;
@@ -307,11 +311,7 @@ public:
     return has_inter;
 	}; 
 
-private:
-	BBox bb;
 };
-
-
 
 
 #endif

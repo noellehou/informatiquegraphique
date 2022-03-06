@@ -90,6 +90,9 @@
     "utility": "cpp",
     "vector": "cpp",
     "random": "cpp",
-    "numeric": "cpp"
+    "numeric": "cpp",
+    "iostream": "cpp",
+    "list": "cpp",
+    "thread": "cpp"
   }
 }
