@@ -22,10 +22,6 @@
 #include <cmath>
 #include <thread>
 
-double clamp(const double& v, const double& low, const double& high) {
-    return std::max(std::min(v, high), low);
-}
-
 Vector operator+(const Vector& a, const Vector &b) {
     return Vector(a[0]+b[0], a[1]+b[1], a[2]+b[2]);
 }
@@ -167,7 +163,7 @@ int main() {
     
 	int W = 200;
 	int H = 200;
-    const int nrays = 80;
+    const int nrays = 8;
 	double fov = 60*M_PI/180;
 
     // TriangleMesh mesh = TriangleMesh();
@@ -179,14 +175,15 @@ int main() {
     //Sphere s1(Vector(10,20,-55), 20, Vector(1.,1.,1.));
     //Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
     //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
+    const char* nom_image = "test_mesh.png";
 
     Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.4,0.4,1)); //sol
     Sphere plafond(Vector(0,2000+100,0), 2000, Vector(1,1,1)); //plafond
     Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,0,0)); //mur gauche
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
-    TriangleMesh g1("/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/mesh/dog.obj", 1, Vector(0.,0.,0.), Vector(0.,0.,0.));
-    
+    TriangleMesh mesh_test(Vector(255,255,255), false,false);
+    mesh_test.readOBJ("/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/mesh/dog.obj");
     // Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
     Scene s; 
@@ -195,7 +192,7 @@ int main() {
     //s.addSphere(s2);
     //s.addSphere(s3);
     // s.addTriangle(tri);
-    s.addMesh(g1);
+    s.addMesh(mesh_test);
     s.addSphere(sol);
     s.addSphere(plafond);
     s.addSphere(murgauche);
@@ -204,7 +201,7 @@ int main() {
     s.lumiere = &slum;
     s.intensite_lumiere = 1000000000;
     /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
-    Vector position_camera(0.,0.,0.);
+    Vector position_camera(0.,30.,300);
     double focus_distance = 55;
     double aperture = 0.5;
 
@@ -243,7 +240,7 @@ int main() {
 		}
 	}
 
-	stbi_write_png("output_test2.png", W, H, 3, &image[0], 0);
+	stbi_write_png("dog_200.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }
