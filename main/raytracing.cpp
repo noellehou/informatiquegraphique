@@ -244,4 +244,3 @@ int main() {
 
 	return 0;
 }
-// 35:24 cours 5
