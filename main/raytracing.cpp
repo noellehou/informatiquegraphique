@@ -161,8 +161,8 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
 
 int main() {
     
-	int W = 200;
-	int H = 200;
+	int W = 500;
+	int H = 500;
     const int nrays = 8;
 	double fov = 60*M_PI/180;
 
@@ -201,7 +201,7 @@ int main() {
     s.lumiere = &slum;
     s.intensite_lumiere = 1000000000;
     /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
-    Vector position_camera(0.,30.,300);
+    Vector position_camera(0.,0.,100);
     double focus_distance = 55;
     double aperture = 0.5;
 
@@ -240,7 +240,7 @@ int main() {
 		}
 	}
 
-	stbi_write_png("dog_200.png", W, H, 3, &image[0], 0);
+	stbi_write_png("dog_500.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }
