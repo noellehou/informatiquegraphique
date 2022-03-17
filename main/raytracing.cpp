@@ -161,9 +161,9 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
 
 int main() {
     
-	int W = 500;
-	int H = 500;
-    const int nrays = 8;
+	int W = 200;
+	int H = 200;
+    const int nrays = 20;
 	double fov = 60*M_PI/180;
 
     // TriangleMesh mesh = TriangleMesh();
@@ -172,7 +172,7 @@ int main() {
 
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
  
-    //Sphere s1(Vector(10,20,-55), 20, Vector(1.,1.,1.));
+    Sphere s1(Vector(-15,0,-35), 20, Vector(1.,1.,1.),true,false);
     //Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
     //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
     const char* nom_image = "test_mesh.png";
@@ -183,16 +183,16 @@ int main() {
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
     TriangleMesh mesh_test(Vector(255,255,255), false,false);
-    mesh_test.readOBJ("/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/mesh/dog.obj");
+    //mesh_test.readOBJ("/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/mesh/dog.obj");
     // Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
     Scene s; 
     s.addSphere(slum);
-    //s.addSphere(s1);
+    s.addSphere(s1);
     //s.addSphere(s2);
     //s.addSphere(s3);
     // s.addTriangle(tri);
-    s.addMesh(mesh_test);
+    //s.addMesh(mesh_test);
     s.addSphere(sol);
     s.addSphere(plafond);
     s.addSphere(murgauche);
@@ -240,7 +240,7 @@ int main() {
 		}
 	}
 
-	stbi_write_png("dog_500.png", W, H, 3, &image[0], 0);
+	stbi_write_png("bille_miroir.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }
