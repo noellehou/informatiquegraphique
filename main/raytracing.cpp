@@ -22,6 +22,8 @@
 #include <cmath>
 #include <thread>
 
+#define OMP_NUM_THREADS = 16
+
 Vector operator+(const Vector& a, const Vector &b) {
     return Vector(a[0]+b[0], a[1]+b[1], a[2]+b[2]);
 }
@@ -106,7 +108,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
             } else {
 
         //Contribution de l'éclairage direct
-        /*
+            /*
             Ray ray_light(P + 0.01*N, (s.position_lumiere - P).getNormalized());
             Vector P_light, N_light;
             int sphere_id_light;
@@ -117,8 +119,9 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
                 intensite_pixel = Vector(0,0,0);
             } 
             else{
-                intensite_pixel = s.spheres[sphere_id].albedo / M_PI * s.intensite_lumiere * std::max(0., dot((s.position_lumiere-P).getNormalized(),N)) / d_light2;
-            } */
+                intensite_pixel = s.objects[sphere_id]->albedo / M_PI * s.intensite_lumiere * std::max(0., dot((s.position_lumiere-P).getNormalized(),N)) / d_light2;
+            } 
+             */
             Vector axeOP = (P - s.lumiere->O).getNormalized();
             Vector dir_aleatoire = random_cos(axeOP);
             Vector point_aleatoire = dir_aleatoire * s.lumiere->R + s.lumiere->O; 
@@ -136,21 +139,21 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
                 intensite_pixel = Vector(0,0,0);
             } else {
                 intensite_pixel = ( s.intensite_lumiere / (4*M_PI*d_light2) * std::max(0.,dot(N,wi)) * dot(Np, 0-wi) / dot(axeOP, dir_aleatoire) ) * s.objects[sphere_id]->albedo ;
-                /*Vector BRDF = s.spheres[sphere_id].albedo / M_PI * (1 - s.spheres[sphere_id]->ks) + s.spheres[sphere_id]->ks*Phong_BRDF(wi,r.direction,N,s.spheres[sphere_id]->phong_exponent)*s.spheres[sphere_id].albedo;
-                double J = 1.* dot(Np, 0-wi)/d_light2;
-                double proba = dot(axeOP, dir_aleatoire)/(M_PI*s.lumiere->R*s.lumiere->R);
-                intensite_pixel =  s.intensite_lumiere * std::max(0.,dot(N,wi)) * J * BRDF / proba; */
+                // Vector BRDF = s.objects[sphere_id]->albedo / M_PI;
+                // double J = 1. * dot(Np, 0-wi) / d_light2;
+                // double proba = dot(axeOP, dir_aleatoire) / (M_PI * s.lumiere->R*s.lumiere->R);
+                // intensite_pixel = ( s.intensite_lumiere * std::max(0.,dot(N,wi)) * dot(Np, 0-wi) / dot(axeOP, dir_aleatoire) ) * s.objects[sphere_id]->albedo ;
             }
-
+        
 
         //Ajout de la contribution de l'éclairage indirect
-
+        
             Vector direction_aleatoire = random_cos(N);
             Ray rayon_aleatoire (P + 0.001*N, direction_aleatoire);
 
 
             intensite_pixel += getColor(rayon_aleatoire, s, nbrebonds - 1) * s.objects[sphere_id]->albedo;
-
+        
 
             }
         }       
@@ -161,9 +164,9 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
 
 int main() {
     
-	int W = 200;
-	int H = 200;
-    const int nrays = 20;
+	int W = 100;
+	int H = 100;
+    const int nrays = 80;
 	double fov = 60*M_PI/180;
 
     // TriangleMesh mesh = TriangleMesh();
@@ -172,26 +175,26 @@ int main() {
 
     Sphere slum(Vector(15, 70, -30), 15, Vector(1.,1.,1.));
  
-    Sphere s1(Vector(-15,0,-35), 20, Vector(1.,1.,1.),true,false);
-    //Sphere s2(Vector(-15,0,-35), 10, Vector(1,1,1),false,true);
+    //Sphere s1(Vector(-15,0,-35), 20, Vector(1.,1.,1.),true,false);
+    //Sphere s2(Vector(15,0,20), 20, Vector(1,1,1),false,true);
     //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
     const char* nom_image = "test_mesh.png";
 
     Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.4,0.4,1)); //sol
     Sphere plafond(Vector(0,2000+100,0), 2000, Vector(1,1,1)); //plafond
-    Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,0,0)); //mur gauche
+    Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(0,0,1)); //mur gauche
     Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
-    TriangleMesh mesh_test(Vector(255,255,255), false,false);
+    // TriangleMesh mesh_test(Vector(255,255,255), false,false);
     //mesh_test.readOBJ("/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/mesh/dog.obj");
-    // Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
+    Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
     Scene s; 
-    s.addSphere(slum);
-    s.addSphere(s1);
+    //s.addSphere(slum);
+    //s.addSphere(s1);
     //s.addSphere(s2);
     //s.addSphere(s3);
-    // s.addTriangle(tri);
+    s.addTriangle(tri);
     //s.addMesh(mesh_test);
     s.addSphere(sol);
     s.addSphere(plafond);
@@ -199,16 +202,15 @@ int main() {
     s.addSphere(murdroit);
     s.addSphere(murfond);
     s.lumiere = &slum;
-    s.intensite_lumiere = 1000000000;
-    /* * 4. *M_PI / (4.*M_PI*s.lumiere->R*s.lumiere->R*M_PI); */
-    Vector position_camera(0.,0.,100);
+    s.intensite_lumiere = 5000000000; 
+    Vector position_camera(0.,0.,50.);
     double focus_distance = 55;
     double aperture = 0.5;
 
 
 	std::vector<unsigned char> image(W*H * 3, 0);
 
-#pragma omp parallel for 
+#pragma omp parallel for num_threads(OMP_NUM_THREADS)
 	for (int i = 0; i < H; i++) {
 		for (int j = 0; j < W; j++) {
 
@@ -240,7 +242,7 @@ int main() {
 		}
 	}
 
-	stbi_write_png("bille_miroir.png", W, H, 3, &image[0], 0);
+	stbi_write_png("bille_eclairagedirect2_miroir.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }

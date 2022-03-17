@@ -55,7 +55,7 @@ class Triangle : public Object {
 
      bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const{
 
-         N = cross(B-A,C-A).getNormalized();
+         N = 0-cross(B-A,C-A).getNormalized();
          t = dot(C - d.origin,N)/ dot(d.direction,N);
          if (t<0) return false;
          P = d.origin + t*d.direction;
@@ -82,6 +82,7 @@ class Triangle : public Object {
          if (beta < 0 || beta > 1 ) return false;
          if (gamma <0 || gamma > 1) return false;
 
+		N.normalize();
          return true;
      }
      const Vector &A, &B, &C;

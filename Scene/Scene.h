@@ -40,6 +40,7 @@ public:
     std::vector<const Object*> objects;
     Sphere *lumiere;
     double intensite_lumiere;
+    double position_lumiere;
 };
 
 #endif
