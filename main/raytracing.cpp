@@ -81,9 +81,6 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
     Vector intensite_pixel(0,0,0);
     if (has_inter) {
 
-        /*if (sphere_id ==0){
-            intensite_pixel = show_lights?(s.lumiere->albedo * s.intensite_lumiere):Vector(0.,0.,0.);
-        } else*/
         if (s.objects[sphere_id]->miroir) {
             Vector direction_miroir = r.direction - 2*dot(N, r.direction)*N;
             Ray rayon_miroir(P + 0.001*N, direction_miroir);
@@ -108,7 +105,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
             } else {
 
         //Contribution de l'éclairage direct
-            
+            /*
             Ray ray_light(P + 0.01*N, (s.position_lumiere - P).getNormalized());
             Vector P_light, N_light;
             int sphere_id_light;
@@ -121,7 +118,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
             else{
                 intensite_pixel = s.objects[sphere_id]->albedo / M_PI * s.intensite_lumiere * std::max(0., dot((s.position_lumiere-P).getNormalized(),N)) / d_light2;
             } 
-             /*
+             */
             Vector axeOP = (P - s.lumiere->O).getNormalized();
             Vector dir_aleatoire = random_cos(axeOP);
             Vector point_aleatoire = dir_aleatoire * s.lumiere->R + s.lumiere->O; 
@@ -154,7 +151,7 @@ Vector getColor(Ray &r, const Scene &s, int nbrebonds,bool show_lights=true) {
 
             intensite_pixel += getColor(rayon_aleatoire, s, nbrebonds - 1) * s.objects[sphere_id]->albedo;
         
-*/
+
             }
            
         }       
@@ -167,7 +164,7 @@ int main() {
     
 	int W = 100;
 	int H = 100;
-    const int nrays = 10;
+    const int nrays = 8;
 	double fov = 60*M_PI/180;
 
     
@@ -179,12 +176,12 @@ int main() {
     //Sphere s3(Vector(15,0,-75), 10, Vector(1,1,1),true);
     const char* nom_image = "test_mesh.png";
 
-    Sphere sol(Vector(0,-2000-20,0), 2000, Vector(1,1,1)); //sol
+    Sphere sol(Vector(0,-2000-20,0), 2000, Vector(0.4,0.4,1)); //sol
     Sphere plafond(Vector(0,2000+100,0), 2000, Vector(1,1,1)); //plafond
     Sphere murgauche(Vector(-2000-50,0,0), 2000, Vector(1,1,1)); //mur gauche
-    Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(1,1,1)); //mur droit
+    Sphere murdroit(Vector(2000+50,0,0), 2000, Vector(0.2,0.8,1)); //mur droit
     Sphere murfond(Vector(0,0,-2000-100), 2000, Vector(1,1,1)); //mur fond
-    TriangleMesh mesh_test(Vector(255,255,255), false,false);
+    TriangleMesh mesh_test(Vector(0.,0.,0.),false,false);
     mesh_test.readOBJ("/Users/noelle/Documents/2 - CENTRALE LYON/MOS/MOS 2.2 - Infographie/informatiquegraphique/mesh/dog.obj");
     //Triangle tri(Vector(-10,-10,-20),Vector(10,-10,-20),Vector(0,10,-20),Vector(1,0,0));
 
@@ -201,8 +198,9 @@ int main() {
     s.addSphere(murdroit);
     s.addSphere(murfond);
     s.lumiere = &slum;
+    //s.position_lumiere = Vector(20.,0.,20.);
     s.intensite_lumiere = 1000000000; 
-    Vector position_camera(0.,0.,50.);
+    Vector position_camera(0.,-10,100.);
     double focus_distance = 55;
     double aperture = 0.5;
 

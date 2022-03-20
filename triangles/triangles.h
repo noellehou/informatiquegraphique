@@ -96,6 +96,7 @@ public:
 	albedo = couleur;
     miroir = mirror; 
     transparency = transparent;
+
 	};
 	void readOBJ(const char* obj) {
 
