@@ -44,6 +44,13 @@ public:
 	Vector bmax;
 };
 
+class BVH {
+public:
+	int i0, i1;
+	BBox bbox;
+	BVH *fg, *fd;
+};
+
 class Triangle : public Object {
  public:
      Triangle(const Vector& A, const Vector &B, const Vector& C, const Vector &couleur, bool mirror = false, bool transparent = false): A(A), B(B), C(C) {
@@ -270,17 +277,121 @@ public:
 		}
 		fclose(f);
 
-	bb.bmax = vertices[0];
-	bb.bmin = vertices[0];
-	for (int i=1; i<vertices.size();i++){
+	build_bvh(&bvh, 0, indices.size()/3);
+	}
+
+	BBox build_bbox(int i0, int i1) {
+
+	BBox result;
+	result.bmax = vertices[i0];
+	result.bmin = vertices[i1];
+	for (int i=i0; i<i1;i++){
 		for (int j=0;j<3;j++){
-			bb.bmin[j] = std::min(bb.bmin[j], vertices[i][j]);
-			bb.bmax[j] = std::max(bb.bmax[j], vertices[i][j]);
+				for (int k=0; k<3; k++){
+					if (j==0){
+						result.bmin[k] = std::min(result.bmin[k], vertices[indices[i*3+j].vtxi][k]);
+						result.bmax[k] = std::max(result.bmax[k], vertices[indices[i*3+j].vtxi][k]);
+					}
+					if (j==1) {
+						result.bmin[k] = std::min(result.bmin[k], vertices[indices[i*3+j].vtxj][k]);
+						result.bmax[k] = std::max(result.bmax[k], vertices[indices[i*3+j].vtxj][k]);
+					}
+					if (j==3) {
+						result.bmin[k] = std::min(result.bmin[k], vertices[indices[i*3+j].vtxk][k]);
+						result.bmax[k] = std::max(result.bmax[k], vertices[indices[i*3+j].vtxk][k]);
+					}
+					
+				}
 		}
 	}
+	return result;
+	}
+
+	void build_bvh(BVH* node, int i0, int i1) {
+		node->bbox = build_bbox(i0,i1);
+		node->i0=i0;
+		node->i1=i1;
+		node->fg = NULL;
+		node->fd = NULL;
+		Vector diag = node->bbox.bmax - node->bbox.bmin;
+		int split_dim;
+		if ((diag[0] > diag[1]) && (diag[0] > diag[2])) {
+			split_dim = 0;
+		} 
+		else {
+			if ((diag[1] > diag[0]) && (diag[1] > diag[2])) {
+				split_dim = 1;
+			}
+			else {
+				split_dim = 2;
+			}
+		}
+
+		double split_val = node->bbox.bmin[split_dim] + diag[split_dim]*0.5;
+		int pivot = i0-1;
+		for (int i=i0; i<i1;i++){
+			double center_split_dim = (vertices[indices[i*3].vtxi][split_dim] + vertices[indices[i*3 + 1].vtxj][split_dim] + vertices[indices[i*3 + 2].vtxk][split_dim]) / 3.;
+			if (center_split_dim < split_val) {
+				pivot++;
+				std::swap(indices[i*3 + 0].vtxi,indices[pivot *3 + 0].vtxi);
+				std::swap(indices[i*3 + 1].vtxj,indices[pivot *3 + 1].vtxj);
+				std::swap(indices[i*3 + 2].vtxk,indices[pivot *3 + 2].vtxk);
+			}
+		}
+		if (pivot <= i0 || pivot >= i1) return;
+
+		node->fg = new BVH();
+		build_bvh(node->fg, i0, pivot);
+
+		node->fd = new BVH();
+		build_bvh(node->fd, pivot, i1);
+		
+
 	}
 
 	bool intersection(const Ray& d, Vector& P, Vector& N, double &t) const {
+		
+		t = 1E99;
+		bool has_inter = false;
+		
+		if (!bvh.bbox.intersection_boite(d)) return false;
+
+		std::list<const BVH*> l;
+		l.push_front(&bvh);
+
+
+		while (!l.empty()) {
+
+			const BVH* current = l.front();
+			l.pop_front();
+			if (current->fg && current->fg->bbox.intersection_boite(d)){
+				l.push_back(current->fg);
+			}
+			if (current->fd && current->fd->bbox.intersection_boite(d)){
+				l.push_back(current->fd);
+			}
+			if (!current->fg) {
+				for(int i = current->i0; i<current->i1;i++){
+					int a = indices[i*3].vtxi;
+					int b = indices[i*3+1].vtxj;
+					int c= indices[i*3+2].vtxk;
+					Triangle tri(vertices[a], vertices[b], vertices[c], albedo, miroir, transparency);
+        			Vector localP;
+					Vector localN;
+        			double localt;
+        			if (tri.intersection(d, localP, localN, localt)) { ///test this because was indented weirdly
+            			has_inter = true;
+            			if (localt < t){
+                		 t = localt;
+                		 P = localP;
+                		 N = localN;
+					
+				}
+				
+			}
+		} }
+		
+		/*
 		if (!bb.intersection_boite(d)) return false;
 
     	t = 1E99;
@@ -293,18 +404,22 @@ public:
         	Vector localP;
 			Vector localN;
         	double localt;
-        if (tri.intersection(d, localP, localN, localt)) {
-            has_inter = true;
-            if (localt < t){
+        	if (tri.intersection(d, localP, localN, localt)) { ///test this because was indented weirdly
+            	has_inter = true;
+            	if (localt < t){
                  t = localt;
                  P = localP;
                  N = localN;
             }
         }
-    }
+    } 
+	*/
+		}
     return has_inter;
+	
+		
+	
 	}
-
 
 	std::vector<TriangleIndices> indices;
 	std::vector<Vector> vertices;
@@ -315,6 +430,7 @@ public:
 	
 
 	BBox bb;
+	BVH bvh;
 };
 
 

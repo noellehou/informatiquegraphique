@@ -239,7 +239,7 @@ int main() {
 		}
 	}
 
-	stbi_write_png("test_chien.png", W, H, 3, &image[0], 0);
+	stbi_write_png("test_chien_bvh.png", W, H, 3, &image[0], 0);
 
 	return 0;
 }
